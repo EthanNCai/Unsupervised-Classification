@@ -7,17 +7,25 @@ import yaml
 from easydict import EasyDict
 from utils.utils import mkdir_if_missing
 
+
 def create_config(config_file_env, config_file_exp):
+    """
+     pass in -> two config file paths
+     returns -> a dictionary of the config items.
+    """
     # Config for environment path
     with open(config_file_env, 'r') as stream:
         root_dir = yaml.safe_load(stream)['root_dir']
-   
+
+    # acquire config yaml file path
+    # 'config_file_exp' example -> configs/pretext/simclr_cifar10.yml
     with open(config_file_exp, 'r') as stream:
         config = yaml.safe_load(stream)
-    
+
+    # target dict
     cfg = EasyDict()
-   
-    # Copy
+
+    # migrate the content into cfg
     for k, v in config.items():
         cfg[k] = v
 
@@ -37,7 +45,7 @@ def create_config(config_file_env, config_file_exp):
     if cfg['setup'] in ['scan', 'selflabel']:
         base_dir = os.path.join(root_dir, cfg['train_db_name'])
         scan_dir = os.path.join(base_dir, 'scan')
-        selflabel_dir = os.path.join(base_dir, 'selflabel') 
+        selflabel_dir = os.path.join(base_dir, 'selflabel')
         mkdir_if_missing(base_dir)
         mkdir_if_missing(scan_dir)
         mkdir_if_missing(selflabel_dir)
@@ -48,4 +56,4 @@ def create_config(config_file_env, config_file_exp):
         cfg['selflabel_checkpoint'] = os.path.join(selflabel_dir, 'checkpoint.pth.tar')
         cfg['selflabel_model'] = os.path.join(selflabel_dir, 'model.pth.tar')
 
-    return cfg 
+    return cfg
